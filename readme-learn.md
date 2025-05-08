@@ -1,6 +1,7 @@
+this md file is built by chatgpt, more details will be update later
 # omnih2o: A Personal Learning Journey
 
-This repository is a personal exploration and study of the [omnih2o](https://github.com/username/omnih2o) project. My goal is to understand its architecture, design patterns, and implementation details by analyzing and reconstructing its components.
+This repository is a personal exploration and study of the [omnih2o](https://github.com/LeCAR-Lab/human2humanoid.git) project. My goal is to understand its architecture, design patterns, and implementation details by analyzing and reconstructing its components.
 
 ## 📚 Learning Objectives
 
