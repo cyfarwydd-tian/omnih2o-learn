@@ -46,7 +46,7 @@ def load_amass_data(data_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--amass_root", type=str, default="/hdd/zen/data/ActBound/AMASS/AMASS_Complete")
+    parser.add_argument("--amass_root", type=str, default="/data/fangzheng/omnih2o/human2humanoid/data/AMASS/AMASS_Complete/BMLhandball/S02_Novice/s02_1")
     args = parser.parse_args()
     
     device = torch.device("cpu")
@@ -126,9 +126,8 @@ if __name__ == "__main__":
 
         pose_aa_h1 = np.repeat(np.repeat(sRot.identity().as_rotvec()[None, None, None, ], 22, axis = 2), N, axis = 1)
         pose_aa_h1[..., 0, :] = (sRot.from_rotvec(pose_aa_walk.cpu().numpy()[:, :3]) * sRot.from_quat([0.5, 0.5, 0.5, 0.5]).inv()).as_rotvec()
-        pose_aa_h1 = torch.from_numpy(pose_aa_h1).float().to(device)
+        pose_aa_h1 = torch.from_numpy(pose_aa_h1).float().to(device)                                           
         gt_root_rot = torch.from_numpy((sRot.from_rotvec(pose_aa_walk.cpu().numpy()[:, :3]) * sRot.from_quat([0.5, 0.5, 0.5, 0.5]).inv()).as_rotvec()).float().to(device)
-
         dof_pos = torch.zeros((1, N, 19, 1)).to(device)
 
         dof_pos_new = Variable(dof_pos, requires_grad=True)
@@ -169,9 +168,9 @@ if __name__ == "__main__":
                 }
         
         print(f"dumping {data_key} for testing, remove the line if you want to process all data")
-        import ipdb; ipdb.set_trace()
-        joblib.dump(data_dump, "data/h1/test.pkl")
+        #import ipdb; ipdb.set_trace()
+        joblib.dump(data_dump, "data/h1/shape_optimized_v1.pkl")
     
         
-    import ipdb; ipdb.set_trace()
-    joblib.dump(data_dump, "data/h1/amass_all.pkl")
+    #import ipdb; ipdb.set_trace()
+    joblib.dump(data_dump, "data/h1/MLhandball_S02_Novice.pkl")

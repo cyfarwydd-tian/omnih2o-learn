@@ -29,7 +29,8 @@ num_markers : 19
 # motion_file = '{LEGGED_GYM_ROOT_DIR}/resources/motions/h1/amass_phc_clean.pkl'
 # motion_file = '{LEGGED_GYM_ROOT_DIR}/resources/motions/h1/amass_phc_clean_smooth.pkl'
 
-motion_file : 'resources/motions/h1/amass_phc_filtered.pkl'
+motion_file : 'resources/motions/h1/stable_punch.pkl'
+
 
 # motion_file : 'resources/motions/h1/walking_gesture_filered_12_fix.pkl'
 skeleton_file : 'resources/robots/h1/xml/h1.xml'

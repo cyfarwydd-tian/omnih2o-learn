@@ -65,7 +65,7 @@ pose_aa_stand[:, SMPL_BONE_ORDER_NAMES.index('L_Elbow')] = sRot.from_euler("xyz"
 pose_aa_stand[:, SMPL_BONE_ORDER_NAMES.index('R_Elbow')] = sRot.from_euler("xyz", [0, np.pi/2, 0],  degrees = False).as_rotvec()
 pose_aa_stand = torch.from_numpy(pose_aa_stand.reshape(-1, 72))
 
-smpl_parser_n = SMPL_Parser(model_path="data/smpl", gender="neutral")
+smpl_parser_n = SMPL_Parser(model_path="data/smpl", gender="male")
 
 ###### Shape fitting
 trans = torch.zeros([1, 3])
