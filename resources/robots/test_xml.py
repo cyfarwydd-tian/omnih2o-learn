@@ -3,7 +3,8 @@ import glfw
 import sys
 
 # Set the path to your MJCF XML file here
-xml_path = "resources/robots/h1/h1.xml"
+xml_path = "g1/g1_29Dof.xml"
+#xml_path = "g1_description/h1.xml"
 
 # Load the MJCF model
 model = mujoco.MjModel.from_xml_path(xml_path)
