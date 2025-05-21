@@ -67,27 +67,27 @@ class Humanoid_Batch:
         self.joints_range = mjcf_data['joints_range'].to(device)
         self._local_rotation_mat = tRot.quaternion_to_matrix(self._local_rotation).float() # w, x, y ,z
 
-        def from_mjcf(self, path):
+     def from_mjcf(self, path):
         # function from Poselib: 
-         tree = ETree.parse(path)
-         xml_doc_root = tree.getroot()
-         xml_world_body = xml_doc_root.find("worldbody")
-         if xml_world_body is None:
+        tree = ETree.parse(path)
+        xml_doc_root = tree.getroot()
+        xml_world_body = xml_doc_root.find("worldbody")
+        if xml_world_body is None:
             raise ValueError("MJCF parsed incorrectly please verify it.")
          # assume this is the root
-         xml_body_root = xml_world_body.find("body")
-         if xml_body_root is None:
+        xml_body_root = xml_world_body.find("body")
+        if xml_body_root is None:
             raise ValueError("MJCF parsed incorrectly please verify it.")
             
-         xml_joint_root = xml_body_root.find("joint")
+        xml_joint_root = xml_body_root.find("joint")
         
-         node_names = []
-         parent_indices = []
-         local_translation = []
-         local_rotation = []
-         joints_range = []
+        node_names = []
+        parent_indices = []
+        local_translation = []
+        local_rotation = []
+        joints_range = []
 
-        # recursively adding all nodes into the skel_tree
+         # recursively adding all nodes into the skel_tree
         def _add_xml_node(xml_node, parent_index, node_index):
             node_name = xml_node.attrib.get("name")
             # parse the local translation into float list
@@ -115,7 +115,7 @@ class Humanoid_Batch:
             "local_translation": torch.from_numpy(np.array(local_translation, dtype=np.float32)),
             "local_rotation": torch.from_numpy(np.array(local_rotation, dtype=np.float32)),
             "joints_range": torch.from_numpy(np.array(joints_range))
-        }
+         }
 
         
      def fk_batch(self, pose, trans, convert_to_mat=True, return_full = False, dt=1/30):
@@ -123,7 +123,7 @@ class Humanoid_Batch:
         pose_input = pose.clone()
         B, seq_len = pose.shape[:2]
         pose = pose[..., :len(self._parents), :] # H1 fitted joints might have extra joints
-        if self.extend_hand and self.extend_head and pose.shape[-2] == 35:
+        if self.extend_hand and pose.shape[-2] == 35:
             pose = torch.cat([pose, torch.zeros(B, seq_len, 1, 3).to(device).type(dtype)], dim = -2) # adding hand and head joints
 
         if convert_to_mat:
@@ -135,6 +135,10 @@ class Humanoid_Batch:
             pose_mat = pose_mat.reshape(B, seq_len, -1, 3, 3)
         J = pose_mat.shape[2] - 1  # Exclude root
         
+        #print("rotations_world.shape =", rotations_world.shape)
+        #print("positions_world.shape =", positions_world.shape)
+        print("len(self._parents) =", len(self._parents))
+        print("self._parents =", self._parents)
         wbody_pos, wbody_mat = self.forward_kinematics_batch(pose_mat[:, :, 1:], pose_mat[:, :, 0:1], trans)
         
         return_dict = EasyDict()
@@ -166,7 +170,7 @@ class Humanoid_Batch:
             return_dict.global_root_angular_velocity = rigidbody_angular_velocity[..., 0, :]
             return_dict.global_angular_velocity = rigidbody_angular_velocity
             return_dict.global_velocity = rigidbody_linear_velocity
-            
+
             if self.extend_hand or self.extend_head:
                 return_dict.dof_pos = pose.sum(dim = -1)[..., 1:][..., :-self._remove_idx] # you can sum it up since unitree's each joint has 1 dof. Last two are for hands. doesn't really matter. 
             else:

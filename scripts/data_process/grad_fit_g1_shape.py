@@ -80,7 +80,10 @@ verts, joints = smpl_parser_n.get_joints_verts(pose_aa_stand, beta , trans)
 offset = joints[:, 0] - trans
 root_trans_offset = trans + offset
 
-fk_return = h1_fk.fk_batch(pose_aa_h1[None, ], root_trans_offset[None, 0:1])
+
+
+
+fk_return = g1_fk.fk_batch(pose_aa_g1[None, ], root_trans_offset[None, 0:1])
 
 shape_new = Variable(torch.zeros([1, 10]).to(device), requires_grad=True)
 scale = Variable(torch.ones([1]).to(device), requires_grad=True)
