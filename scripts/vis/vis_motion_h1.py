@@ -44,18 +44,18 @@ class AssetDesc:
         self.flip_visual_attachments = flip_visual_attachments
 
 
-#h1_xml = "resources/robots/h1/h1.xml"
-#h1_urdf = "resources/robots/h1/urdf/h1.urdf"
+h1_xml = "resources/robots/h1/h1.xml"
+h1_urdf = "resources/robots/h1/urdf/h1.urdf"
 
-g1_xml = "resources/robots/g1/g1_29dof.xml"
-g1_urdf = "resources/robots/g1/g1_29dof.urdf"
+#g1_xml = "resources/robots/g1/g1_29dof.xml"
+#g1_urdf = "resources/robots/g1/g1_29dof.urdf"
 asset_descriptors = [
     # AssetDesc(h1_xml, False),
-    AssetDesc(g1_urdf, False),
+    AssetDesc(h1_urdf, False),
 ]
-sk_tree = SkeletonTree.from_mjcf(g1_xml)
+sk_tree = SkeletonTree.from_mjcf(h1_xml)
 
-motion_file = "data/g1/deploy_debug1.pkl"
+motion_file = "data/h1/deploy_debug1.pkl"
 if os.path.exists(motion_file):
     print(f"loading {motion_file}")
 else:
@@ -176,7 +176,7 @@ gym.prepare_sim(sim)
 
 device = (torch.device("cuda", index=0) if torch.cuda.is_available() else torch.device("cpu"))
 
-motion_lib = MotionLibH1(motion_file=motion_file, device=device, masterfoot_conifg=None, fix_height=False, multi_thread=False, mjcf_file=g1_xml)
+motion_lib = MotionLibH1(motion_file=motion_file, device=device, masterfoot_conifg=None, fix_height=False, multi_thread=False, mjcf_file=h1_xml)
 num_motions = 1
 curr_start = 0
 motion_lib.load_motions(skeleton_trees=[sk_tree] * num_motions, gender_betas=[torch.zeros(17)] * num_motions, limb_weights=[np.zeros(10)] * num_motions, random_sample=False)

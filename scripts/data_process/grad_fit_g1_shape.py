@@ -27,25 +27,23 @@ from tqdm.notebook import tqdm
 from smpl_sim.smpllib.smpl_joint_names import SMPL_MUJOCO_NAMES, SMPL_BONE_ORDER_NAMES, SMPLH_BONE_ORDER_NAMES, SMPLH_MUJOCO_NAMES
 from phc.utils.torch_g1_humanoid_batch import Humanoid_Batch, G1_ROTATION_AXIS
 
-#this version still use the rubber hand
-#use the G1_29_DOF, locked waist
+# h1_joint_names = [ 'pelvis', 
+#                    'left_hip_yaw_link', 'left_hip_roll_link','left_hip_pitch_link', 'left_knee_link', 'left_ankle_link',
+#                    'right_hip_yaw_link', 'right_hip_roll_link', 'right_hip_pitch_link', 'right_knee_link', 'right_ankle_link',
+#                    'torso_link', 'left_shoulder_pitch_link', 'left_shoulder_roll_link', 'left_shoulder_yaw_link', 'left_elbow_link', 
+#                   'right_shoulder_pitch_link', 'right_shoulder_roll_link', 'right_shoulder_yaw_link', 'right_elbow_link']
+
 g1_joint_names = [ 'pelvis', 
-                   'pelvis_contour_link',
-                   'left_hip_pitch_link','left_hip_roll_link','left_hip_yaw_link','left_knee_link',
-                   'left_ankle_pitch_link','left_ankle_roll_link',
-                   'right_hip_pitch_link','right_hip_roll_link','right_hip_yaw_link','right_knee_link',
-                   'right_ankle_pitch_link','right_ankle_roll_link',
-                   'waist_yaw_link','waist_roll_link',
-                   'torso_link','logo_link','head_link','waist_support_link',
-                   'left_shoulder_pitch_link','left_shoulder_roll_link','left_shoulder_yaw_link','left_elbow_link',
-                   'left_wrist_roll_link','left_wrist_pitch_link','left_wrist_yaw_link','left_rubber_hand',
-                   'right_shoulder_pitch_link','right_shoulder_roll_link','right_shoulder_yaw_link','right_elbow_link',
-                   'right_wrist_roll_link','right_wrist_pitch_link','right_wrist_yaw_link','right_rubber_hand']
+                   'left_hip_pitch_link', 'left_hip_roll_link','left_hip_yaw_link', 'left_knee_link', 'left_ankle_pitch_link','left_ankle_roll_link',
+                   'right_hip_pitch_link', 'right_hip_roll_link', 'right_hip_yaw_link', 'right_knee_link', 'right_ankle_pitch_link','right_ankle_roll_link',
+                   'waist_yaw_link', 'waist_roll_link', 'torso_link', 'left_shoulder_pitch_link', 'left_shoulder_roll_link', 'left_shoulder_yaw_link', 'left_elbow_link', 'left_wrist_roll_link', 'left_wrist_pitch_link', 'left_wrist_yaw_link', 
+                  'right_shoulder_pitch_link', 'right_shoulder_roll_link', 'right_shoulder_yaw_link', 'right_elbow_link', 'right_wrist_roll_link', 'right_wrist_pitch_link', 'right_wrist_yaw_link']
 
 
-g1_fk = Humanoid_Batch(extend_head=False) # load forward kinematics model
-g1_joint_names_augment = g1_joint_names
-g1_joint_pick = ['pelvis',  'left_hip_yaw_link', "left_knee_link", "left_ankle_pitch_link",  'right_hip_yaw_link', 'right_knee_link', 'right_ankle_pitch_link', "left_shoulder_roll_link", "left_elbow_link", "left_rubber_hand", "right_shoulder_roll_link", "right_elbow_link", "right_rubber_hand", "head_link"]
+g1_fk = Humanoid_Batch(extend_head=True) # load forward kinematics model
+#### Define corresonpdances between h1 and smpl joints
+g1_joint_names_augment = g1_joint_names + ["left_hand_link", "right_hand_link", "head_link"]
+g1_joint_pick = ['pelvis',  'left_hip_yaw_link', "left_knee_link", "left_ankle_pitch_link",  'right_hip_yaw_link', 'right_knee_link', 'right_ankle_pitch_link', "left_shoulder_roll_link", "left_elbow_link", "left_hand_link", "right_shoulder_roll_link", "right_elbow_link", "right_hand_link", "head_link"]
 smpl_joint_pick = ["Pelvis", "L_Hip",  "L_Knee", "L_Ankle",  "R_Hip", "R_Knee", "R_Ankle", "L_Shoulder", "L_Elbow", "L_Hand", "R_Shoulder", "R_Elbow", "R_Hand", "Head"]
 g1_joint_pick_idx = [ g1_joint_names_augment.index(j) for j in g1_joint_pick]
 smpl_joint_pick_idx = [SMPL_BONE_ORDER_NAMES.index(j) for j in smpl_joint_pick]
@@ -53,11 +51,12 @@ smpl_joint_pick_idx = [SMPL_BONE_ORDER_NAMES.index(j) for j in smpl_joint_pick]
 
 #### Preparing fitting varialbes
 device = torch.device("cpu")
-pose_aa_g1 = np.repeat(np.repeat(sRot.identity().as_rotvec()[None, None, None, ], 35, axis = 2), 1, axis = 1)
+pose_aa_g1 = np.repeat(np.repeat(sRot.identity().as_rotvec()[None, None, None, ], 32, axis = 2), 1, axis = 1)
 pose_aa_g1 = torch.from_numpy(pose_aa_g1).float()
 
-dof_pos = torch.zeros((1, 19))
+dof_pos = torch.zeros((1, 29))
 pose_aa_g1 = torch.cat([torch.zeros((1, 1, 3)), G1_ROTATION_AXIS * dof_pos[..., None], torch.zeros((1, 2, 3))], axis = 1)
+
 
 root_trans = torch.zeros((1, 1, 3))    
 
@@ -72,16 +71,14 @@ pose_aa_stand[:, SMPL_BONE_ORDER_NAMES.index('L_Elbow')] = sRot.from_euler("xyz"
 pose_aa_stand[:, SMPL_BONE_ORDER_NAMES.index('R_Elbow')] = sRot.from_euler("xyz", [0, np.pi/2, 0],  degrees = False).as_rotvec()
 pose_aa_stand = torch.from_numpy(pose_aa_stand.reshape(-1, 72))
 
-smpl_parser_n = SMPL_Parser(model_path="data/smpl", gender="male")
+smpl_parser_n = SMPL_Parser(model_path="data/smpl", gender="neutral")
 
+###### Shape fitting
 trans = torch.zeros([1, 3])
 beta = torch.zeros([1, 10])
 verts, joints = smpl_parser_n.get_joints_verts(pose_aa_stand, beta , trans)
 offset = joints[:, 0] - trans
 root_trans_offset = trans + offset
-
-
-
 
 fk_return = g1_fk.fk_batch(pose_aa_g1[None, ], root_trans_offset[None, 0:1])
 
@@ -105,5 +102,5 @@ for iteration in range(1000):
     optimizer_shape.step()
 
 os.makedirs("data/g1", exist_ok=True)
-joblib.dump((shape_new.detach(), scale), "data/g1/shape_optimized_v1.pkl") # V2 has hip jointsrea
-print(f"shape fitted and saved to data/g1/shape_optimized_v1.pkl")
+joblib.dump((shape_new.detach(), scale), "data/g1/shape_optimized_v3.pkl") # V2 has hip jointsrea
+print(f"shape fitted and saved to data/g1/shape_optimized_v3.pkl")
