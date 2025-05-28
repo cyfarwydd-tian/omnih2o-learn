@@ -52,7 +52,7 @@ def load_amass_data(data_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--amass_root", type=str, default="/home/yuji/yuji/human2humanoid/data/AMASS/AMASS_DEPLOY_DEBUG")
+    parser.add_argument("--amass_root", type=str, default="/data/fangzheng/omnih2o/human2humanoid/data/AMASS/AMASS_Complete/BMLhandball/S10_Expert")
     # parser.add_argument("--amass_root", type=str, default="/home/yuji/yuji/human2humanoid/data/AMASS/AMASS_Debug")
     # parser.add_argument("--amass_root", type=str, default="/home/yuji/yuji/human2humanoid/data/AMASS/AMASS_TEST")
     args = parser.parse_args()
