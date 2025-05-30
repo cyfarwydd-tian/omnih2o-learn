@@ -146,7 +146,7 @@ class LeggedRobot(BaseTask):
         self.expert_policy = load_mlp(loading_keys, model_dict, actvation_func, model_key = model_key)
         self.expert_policy.to(self.device)
         
-    # train and update 
+
     def step(self, actions):
         """ Apply actions, simulate, call self.post_physics_step()
 
